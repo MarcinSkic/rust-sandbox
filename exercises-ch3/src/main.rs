@@ -1,7 +1,34 @@
+#![allow(dead_code)]
+
 use std::io;
 
 fn main() {
-    temperature()
+    //temperature()
+    fibonacci(3);
+}
+
+fn twelve_days_of_christmas() {
+    let days = [
+        "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth",
+        "tenth", "eleventh", "twelfth",
+    ];
+
+    for day in 0..12 {
+        let day_text = days[day];
+        println!("{day_text}")
+    }
+}
+
+fn fibonacci(n: u32) {
+    let mut n1 = 0;
+    let mut n2 = 1;
+
+    for _ in 1..n {
+        n2 += n1;
+        n1 = n2 - n1;
+    }
+
+    println!("{n2}");
 }
 
 fn temperature() {
