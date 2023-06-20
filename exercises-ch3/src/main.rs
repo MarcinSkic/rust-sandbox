@@ -4,7 +4,7 @@ use std::io;
 
 fn main() {
     //temperature()
-    fibonacci(3);
+    twelve_days_of_christmas();
 }
 
 fn twelve_days_of_christmas() {
@@ -13,9 +13,36 @@ fn twelve_days_of_christmas() {
         "tenth", "eleventh", "twelfth",
     ];
 
+    let verses = [
+        "A partridge in a pear tree",
+        "Two turtle doves",
+        "Three French hens",
+        "Four calling birds",
+        "Five gold rings",
+        "Six geese a-laying",
+        "Seven swans a-swimming",
+        "Eight maids a-milking",
+        "Nine ladies dancing",
+        "Ten lords a-leaping",
+        "Eleven pipers piping",
+        "Twelve drummers drumming",
+    ];
+
     for day in 0..12 {
         let day_text = days[day];
-        println!("{day_text}")
+        println!("On the {day_text} day of Christmas, my true love sent to me");
+
+        for verse_i in (0..day + 1).rev() {
+            let verse_text = verses[verse_i];
+            if day != 0 && verse_i == 0 {
+                let verse_text = verse_text.to_lowercase();
+                println!("And {verse_text}.");
+            } else {
+                println!("{verse_text}");
+            }
+        }
+
+        println!();
     }
 }
 
