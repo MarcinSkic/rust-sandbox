@@ -5,6 +5,12 @@ fn main() {
     immutable_reference_to_mutable_value();
     println!("\nMut test");
     mut_test();
+
+    println!("\nSlices");
+    slices();
+
+    println!("\nConsuming ownership");
+    consuming_ownership();
 }
 
 fn immutable_reference_to_mutable_value() {
@@ -37,4 +43,29 @@ fn mut_test() {
     z += 5;
     println!("{x}");
     println!("{z}");
+}
+
+fn round_in_place(v: &mut Vec<f32>) {
+    for n in v {
+        *n = n.round();
+    }
+}
+
+fn slices() {
+    let a = [1, 2, 3, 4, 5];
+
+    let slice = &a[1..3];
+
+    assert_eq!(slice, &[2, 3]);
+}
+
+fn consuming_ownership() {
+    let mut vec: Vec<String> = vec!["Rust".to_string(), "is".to_string(), "awesome!".to_string()];
+    vec = add_to_vec(vec, "yello".to_string());
+    println!("{:?}", vec)
+}
+
+fn add_to_vec(mut vec: Vec<String>, string: String) -> Vec<String> {
+    vec.push(string);
+    vec
 }
