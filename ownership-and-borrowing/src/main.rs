@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 fn main() {
     println!("Mutable");
     mutable_reference_to_mutable_value();
