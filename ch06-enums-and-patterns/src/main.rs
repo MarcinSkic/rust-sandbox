@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 fn main() {
     #[derive(Debug)]
     enum IpAddr {
@@ -11,6 +12,9 @@ fn main() {
 
     println!("{:#?}", home);
     println!("{:#?}", loopback);
+
+    match_can_consume_ownership();
+    one_match_syntax();
 }
 
 fn match_can_consume_ownership() {
@@ -27,4 +31,18 @@ fn match_can_consume_ownership() {
         Either::Right(s) => s.len(),
     };
     println!("{x:?} {value}");
+}
+
+fn one_match_syntax() {
+    let config_max = Some(3u8);
+
+    // same operation
+    match config_max {
+        Some(max) => println!("The maximum is configured to be {}", max),
+        _ => (),
+    }
+
+    if let Some(max) = config_max {
+        println!("The maximum is configured to be {}", max);
+    }
 }
