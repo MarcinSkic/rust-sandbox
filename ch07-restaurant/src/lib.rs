@@ -1,4 +1,4 @@
-#![allow(dead_code, unused_variables)]
+#![allow(dead_code, unused_variables, unused_imports)]
 
 mod back_of_house {
     // struct has fields private or public case-by-case
@@ -45,12 +45,18 @@ mod front_of_house {
     }
 }
 
+// pub use re-exports names
+pub use crate::front_of_house::hosting;
+
 pub fn eat_at_restaurant() {
     // Absolute path
     crate::front_of_house::hosting::add_to_waitlist();
 
     // Relative path
     front_of_house::hosting::add_to_waitlist();
+
+    // Using use
+    hosting::add_to_waitlist();
 
     // Order a breakfast in the summer with Rye toast
     let mut meal = back_of_house::Breakfast::summer("Rye");
@@ -65,3 +71,23 @@ pub fn eat_at_restaurant() {
     let order1 = back_of_house::Appetizer::Soup;
     let order2 = back_of_house::Appetizer::Salad;
 }
+
+// aliasing
+use std::fmt::Result;
+use std::io::Result as IoResult;
+
+fn function1() -> Result {
+    Ok(())
+}
+
+fn function2() -> IoResult<()> {
+    Ok(())
+}
+
+// equals use std::{cmp::Ordering, assert};
+use std::assert;
+use std::cmp::Ordering;
+
+// equals use std::io::{self, Write};
+use std::io;
+use std::io::Write;
