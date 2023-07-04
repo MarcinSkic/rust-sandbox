@@ -1,49 +1,8 @@
 #![allow(dead_code, unused_variables, unused_imports)]
 
-mod back_of_house {
-    // struct has fields private or public case-by-case
-    pub struct Breakfast {
-        pub toast: String,
-        seasonal_fruit: String,
-    }
+mod back_of_house;
 
-    // on the other hand, all enum variants are public if enum is public
-    pub enum Appetizer {
-        Soup,
-        Salad,
-    }
-
-    impl Breakfast {
-        pub fn summer(toast: &str) -> Breakfast {
-            Breakfast {
-                toast: String::from(toast),
-                seasonal_fruit: String::from("peaches"),
-            }
-        }
-    }
-}
-
-mod front_of_house {
-    pub mod hosting {
-        pub fn add_to_waitlist() {}
-
-        fn seat_at_table() {}
-    }
-
-    mod serving {
-        fn take_order() {
-            // Absolute path
-            crate::front_of_house::hosting::add_to_waitlist();
-
-            // Relative path
-            super::hosting::add_to_waitlist();
-        }
-
-        fn serve_order() {}
-
-        fn take_payment() {}
-    }
-}
+mod front_of_house;
 
 // pub use re-exports names
 pub use crate::front_of_house::hosting;
