@@ -20,7 +20,7 @@ fn main() {
 
     let team_name = String::from("Blue");
     // accessing by key
-    let score = scores.get(&team_name).copied().unwrap_or(0);
+    let _score = scores.get(&team_name).copied().unwrap_or(0);
 
     // iterating through
     for (key, value) in &scores {
