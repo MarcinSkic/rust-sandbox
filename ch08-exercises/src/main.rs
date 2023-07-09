@@ -9,6 +9,10 @@ fn main() {
     }
 
     get_median_and_mode(&random_integers);
+
+    let mut sentence = String::from("This is pig latin extreme test");
+    convert_to_pig_latin(&mut sentence);
+    assert_eq!(sentence, "histay ishay igpay atinlay extremehay esttay");
 }
 
 fn get_median_and_mode(integers: &[i32]) -> (i32, i32) {
@@ -39,4 +43,36 @@ fn get_median_and_mode(integers: &[i32]) -> (i32, i32) {
     println!("Mode: {mode} occurs: {max_occurence} times");
 
     (median, mode)
+}
+
+fn convert_to_pig_latin(text: &mut String) {
+    let mut converted = String::new();
+
+    for word in text.split_whitespace() {
+        let (index, first_char) = word.char_indices().next().unwrap();
+
+        match first_char {
+            'a' | 'e' | 'i' | 'o' | 'u' | 'y' => {
+                converted = format!("{converted}{word}hay ");
+            }
+            c => {
+                let word = string_without_first_letter_v2(index, c, word);
+
+                converted = format!("{converted}{}{}ay ", word, c.to_ascii_lowercase());
+            }
+        }
+    }
+
+    *text = converted.strip_suffix(" ").unwrap().to_string();
+}
+
+#[allow(dead_code)]
+fn string_without_first_letter_v1(index: usize, char: char, word: &str) -> &str {
+    let next_index = index + char.len_utf8();
+    &word[next_index..]
+}
+
+#[allow(dead_code)]
+fn string_without_first_letter_v2(_index: usize, char: char, word: &str) -> &str {
+    &word.strip_prefix(char).unwrap()
 }
