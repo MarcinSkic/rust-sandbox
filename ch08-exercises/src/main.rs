@@ -129,7 +129,6 @@ Options (write number):
     }
 }
 
-// TODO: Comeback after generics and lifetimes to fully understand what is happening here
 fn stdin_from_list_of_options<'list, T: std::fmt::Display + ?Sized>(
     list: &'list [&T],
     title: &str,
