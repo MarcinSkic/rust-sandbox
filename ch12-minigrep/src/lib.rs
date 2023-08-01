@@ -1,3 +1,6 @@
+//! # Minigrep
+//! `ch12_minigrep` is a very simple implementation of grep utility tool, created
+//! as an exercise from "The Book": <https://rust-book.cs.brown.edu/ch14-02-publishing-to-crates-io.html>
 use std::{env, error::Error, fs};
 
 #[derive(Debug, PartialEq)]
@@ -62,6 +65,20 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Returns all lines that contain given string
+///
+/// # Examples
+///
+/// ```
+/// let query = "duct";
+/// let contents = "\
+/// Rust:
+/// safe, fast, productive.
+/// Pick three.
+/// Duct tape.";
+///
+/// assert_eq!(vec!["safe, fast, productive."], ch12_minigrep::search(query, contents));
+/// ```
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     contents
         .lines()
