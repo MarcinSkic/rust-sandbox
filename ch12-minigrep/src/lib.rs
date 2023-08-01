@@ -1,27 +1,31 @@
 use std::{env, error::Error, fs};
 
 #[derive(Debug, PartialEq)]
-pub struct Config<'a> {
-    pub query: &'a str,
-    pub file_path: &'a str,
+pub struct Config {
+    pub query: String,
+    pub file_path: String,
     pub ignore_case: bool,
     pub print_author: bool,
 }
 
-impl Config<'_> {
-    pub fn build(args: &[String]) -> Result<Config, &'static str> {
-        if args.len() < 3 {
-            return Err("Not enough arguments");
-        }
+impl Config {
+    pub fn build(mut args: impl Iterator<Item = String>) -> Result<Config, &'static str> {
+        args.next();
 
         let mut ignore_case = env::var("IGNORE_CASE").is_ok();
         let mut print_author = false;
 
-        let query = &args[1];
-        let file_path = &args[2];
-        let flags = &args[3..];
+        let query = match args.next() {
+            Some(query) => query,
+            None => return Err("Missing query string"),
+        };
 
-        for flag in flags {
+        let file_path = match args.next() {
+            Some(path) => path,
+            None => return Err("Missing path string"),
+        };
+
+        for flag in args {
             match flag.as_str() {
                 "-i" => ignore_case = true,
                 "-a" => print_author = true,
@@ -59,28 +63,19 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 }
 
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-    let mut results: Vec<&str> = vec![];
-
-    for line in contents.lines() {
-        if line.contains(query) {
-            results.push(line);
-        }
-    }
-
-    results
+    contents
+        .lines()
+        .filter(|line| line.contains(query))
+        .collect()
 }
 
 pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     let query = query.to_lowercase();
-    let mut results = Vec::new();
 
-    for line in contents.lines() {
-        if line.to_lowercase().contains(&query) {
-            results.push(line);
-        }
-    }
-
-    results
+    contents
+        .lines()
+        .filter(|line| line.to_lowercase().contains(&query))
+        .collect()
 }
 
 #[cfg(test)]
@@ -126,13 +121,13 @@ Trust me.";
 
     #[test]
     fn work_without_flags() {
-        let args = command_to_args("program_name to poem.txt");
+        let args = command_to_args("program_name to poem.txt").into_iter();
 
         assert_eq!(
-            Config::build(&args).unwrap(),
+            Config::build(args).unwrap(),
             Config {
-                query: "to",
-                file_path: "poem.txt",
+                query: "to".to_string(),
+                file_path: "poem.txt".to_string(),
                 ignore_case: false,
                 print_author: false
             }
@@ -141,13 +136,13 @@ Trust me.";
 
     #[test]
     fn detect_one_flag() {
-        let args = command_to_args("program_name to poem.txt -i");
+        let args = command_to_args("program_name to poem.txt -i").into_iter();
 
         assert_eq!(
-            Config::build(&args).unwrap(),
+            Config::build(args).unwrap(),
             Config {
-                query: "to",
-                file_path: "poem.txt",
+                query: "to".to_string(),
+                file_path: "poem.txt".to_string(),
                 ignore_case: true,
                 print_author: false
             }
@@ -156,13 +151,13 @@ Trust me.";
 
     #[test]
     fn detect_multiple_flags() {
-        let args = command_to_args("program_name to poem.txt -a -i");
+        let args = command_to_args("program_name to poem.txt -a -i").into_iter();
 
         assert_eq!(
-            Config::build(&args).unwrap(),
+            Config::build(args).unwrap(),
             Config {
-                query: "to",
-                file_path: "poem.txt",
+                query: "to".to_string(),
+                file_path: "poem.txt".to_string(),
                 ignore_case: true,
                 print_author: true
             }
@@ -171,13 +166,13 @@ Trust me.";
 
     #[test]
     fn ignore_undefined_flags() {
-        let args = command_to_args("program_name lol poem.txt -lol -i -xd -a");
+        let args = command_to_args("program_name lol poem.txt -lol -i -xd -a").into_iter();
 
         assert_eq!(
-            Config::build(&args).unwrap(),
+            Config::build(args).unwrap(),
             Config {
-                query: "lol",
-                file_path: "poem.txt",
+                query: "lol".to_string(),
+                file_path: "poem.txt".to_string(),
                 ignore_case: true,
                 print_author: true
             }
