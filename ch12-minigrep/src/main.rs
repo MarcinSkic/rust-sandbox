@@ -1,4 +1,4 @@
-use ch12_minigrep::Config;
+use minigrep_marcinskic::Config;
 use std::{env, process};
 
 fn main() {
@@ -7,7 +7,7 @@ fn main() {
         process::exit(1);
     });
 
-    if let Err(e) = ch12_minigrep::run(config) {
+    if let Err(e) = minigrep_marcinskic::run(config) {
         eprintln!("Application error: {e}");
         process::exit(1);
     }

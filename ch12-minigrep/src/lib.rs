@@ -1,5 +1,5 @@
 //! # Minigrep
-//! `ch12_minigrep` is a very simple implementation of grep utility tool, created
+//! `minigrep_marcinskic` is a very simple implementation of grep utility tool, created
 //! as an exercise from "The Book": <https://rust-book.cs.brown.edu/ch14-02-publishing-to-crates-io.html>
 use std::{env, error::Error, fs};
 
@@ -77,7 +77,7 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 /// Pick three.
 /// Duct tape.";
 ///
-/// assert_eq!(vec!["safe, fast, productive."], ch12_minigrep::search(query, contents));
+/// assert_eq!(vec!["safe, fast, productive."], minigrep_marcinskic::search(query, contents));
 /// ```
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     contents
