@@ -17,6 +17,7 @@ impl List {
     }
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 struct Node {
     value: i32,
