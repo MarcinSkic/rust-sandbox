@@ -12,7 +12,9 @@ impl Post {
     }
 
     pub fn add_text(&mut self, text: &str) {
-        self.content.push_str(text);
+        if self.state.as_ref().unwrap().can_update_text() {
+            self.content.push_str(text);
+        }
     }
 
     pub fn content(&self) -> &str {
@@ -25,6 +27,12 @@ impl Post {
         }
     }
 
+    pub fn reject(&mut self) {
+        if let Some(s) = self.state.take() {
+            self.state = Some(s.reject())
+        }
+    }
+
     pub fn approve(&mut self) {
         if let Some(s) = self.state.take() {
             self.state = Some(s.approve())
@@ -33,7 +41,11 @@ impl Post {
 }
 
 trait State {
+    fn can_update_text(&self) -> bool {
+        false
+    }
     fn request_review(self: Box<Self>) -> Box<dyn State>;
+    fn reject(self: Box<Self>) -> Box<dyn State>;
     fn approve(self: Box<Self>) -> Box<dyn State>;
 
     fn content<'a>(&self, _post: &'a Post) -> &'a str {
@@ -44,8 +56,16 @@ trait State {
 struct Draft {}
 
 impl State for Draft {
+    fn can_update_text(&self) -> bool {
+        true
+    }
+
     fn request_review(self: Box<Self>) -> Box<dyn State> {
-        Box::new(PendingReview {})
+        Box::new(PendingReview { approves: 0 })
+    }
+
+    fn reject(self: Box<Self>) -> Box<dyn State> {
+        self
     }
 
     fn approve(self: Box<Self>) -> Box<dyn State> {
@@ -53,15 +73,27 @@ impl State for Draft {
     }
 }
 
-struct PendingReview {}
+struct PendingReview {
+    approves: i32,
+}
 
 impl State for PendingReview {
     fn request_review(self: Box<Self>) -> Box<dyn State> {
         self
     }
 
-    fn approve(self: Box<Self>) -> Box<dyn State> {
-        Box::new(Published {})
+    fn reject(self: Box<Self>) -> Box<dyn State> {
+        Box::new(Draft {})
+    }
+
+    fn approve(mut self: Box<Self>) -> Box<dyn State> {
+        self.approves += 1;
+
+        if self.approves != 2 {
+            return self;
+        } else {
+            return Box::new(Published {});
+        }
     }
 }
 
@@ -69,6 +101,10 @@ struct Published {}
 
 impl State for Published {
     fn request_review(self: Box<Self>) -> Box<dyn State> {
+        self
+    }
+
+    fn reject(self: Box<Self>) -> Box<dyn State> {
         self
     }
 
@@ -86,7 +122,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
+    fn only_in_published_content_is_available() {
         let mut post = Post::new();
 
         post.add_text("I ate a salad for lunch today");
@@ -96,6 +132,45 @@ mod tests {
         assert_eq!("", post.content());
 
         post.approve();
+        post.approve();
         assert_eq!("I ate a salad for lunch today", post.content());
+    }
+
+    #[test]
+    fn only_in_draft_text_can_be_changed() {
+        let mut post = Post::new();
+
+        post.add_text("Changed in draft");
+
+        post.request_review();
+
+        post.add_text("Changed in review");
+
+        post.approve();
+        post.approve();
+
+        post.add_text("Changed in published");
+
+        assert_eq!("Changed in draft", post.content());
+    }
+
+    #[test]
+    fn reject_works() {
+        let mut post = Post::new();
+
+        post.add_text("Changed in draft");
+
+        post.request_review();
+
+        post.reject();
+
+        post.add_text("\nChanged after rejecting");
+
+        post.request_review();
+
+        post.approve();
+        post.approve();
+
+        assert_eq!("Changed in draft\nChanged after rejecting", post.content());
     }
 }
