@@ -69,4 +69,10 @@ fn main() {
         let point = (3, 5);
         print_coordinates(&point);
     }
+
+    // let can have refutable pattern but then must panic or return in case of failure
+    {
+        let some_option_value: Option<i32> = None;
+        let Some(_x) = some_option_value else { todo!("The hell") };
+    }
 }
