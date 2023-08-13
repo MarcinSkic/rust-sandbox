@@ -39,7 +39,8 @@ fn main() {
         assert_eq!(b, &mut [4, 5, 6]);
     }
 
-    // accesing or modifying mutable static variables is always unsafe
+    // accesing or modifying mutable static variables is always unsafe.
+    // it's due to inability to guarantee safety in multithreaded scenarios
     {
         static mut COUNTER: u32 = 0;
 
